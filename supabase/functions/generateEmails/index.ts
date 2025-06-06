@@ -259,13 +259,20 @@ REQUIREMENTS:
 - Make each email different but maintain Chris M. Walker's voice
 - Use specific feature names and benefits from the product details
 - Connect product capabilities to real business pain points
+- Provide 5 different subject line options for each email (vary the approach: direct, curiosity-driven, benefit-focused, problem-focused, urgency-based)
 
 IMPORTANT: Return ONLY a valid JSON object with this exact structure:
 
 {
   "emails": [
     {
-      "subject": "Subject line here",
+      "subjects": [
+        "Subject line option 1",
+        "Subject line option 2", 
+        "Subject line option 3",
+        "Subject line option 4",
+        "Subject line option 5"
+      ],
       "body": "Email body here with proper line breaks as \\n"
     }
   ]
@@ -327,8 +334,17 @@ Make sure all quotes within the email content are properly escaped with backslas
       // Validate each email has required fields
       for (let i = 0; i < emails.emails.length; i++) {
         const email = emails.emails[i];
-        if (!email.subject || !email.body) {
-          throw new Error(`Email ${i + 1} missing required fields (subject or body)`);
+        if (!email.subjects || !Array.isArray(email.subjects) || email.subjects.length !== 5) {
+          throw new Error(`Email ${i + 1} missing subjects array or doesn't have exactly 5 subject lines`);
+        }
+        if (!email.body) {
+          throw new Error(`Email ${i + 1} missing body field`);
+        }
+        // Validate each subject line is a non-empty string
+        for (let j = 0; j < email.subjects.length; j++) {
+          if (!email.subjects[j] || typeof email.subjects[j] !== 'string') {
+            throw new Error(`Email ${i + 1}, subject ${j + 1} is empty or not a string`);
+          }
         }
       }
       

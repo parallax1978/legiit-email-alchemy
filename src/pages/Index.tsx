@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 interface GeneratedEmail {
-  subject: string;
+  subjects: string[];
   body: string;
 }
 
@@ -76,12 +77,15 @@ const Index = () => {
     }
   };
 
-  const copyToClipboard = async (text: string, emailNumber: number) => {
+  const copyToClipboard = async (text: string, emailNumber: number, subjectIndex?: number) => {
     try {
       await navigator.clipboard.writeText(text);
+      const description = subjectIndex !== undefined 
+        ? `Subject line ${subjectIndex + 1} from Email ${emailNumber} copied to clipboard.`
+        : `Email ${emailNumber} copied to clipboard.`;
       toast({
         title: "Copied!",
-        description: `Email ${emailNumber} copied to clipboard.`,
+        description,
       });
     } catch (error) {
       toast({
@@ -102,9 +106,10 @@ const Index = () => {
       return;
     }
 
-    const content = emails.map((email, index) => 
-      `Email ${index + 1}:\nSubject: ${email.subject}\nBody:\n${email.body}\n\n***\n\n`
-    ).join('');
+    const content = emails.map((email, index) => {
+      const subjectLines = email.subjects.map((subject, idx) => `Subject Option ${idx + 1}: ${subject}`).join('\n');
+      return `Email ${index + 1}:\n${subjectLines}\nBody:\n${email.body}\n\n***\n\n`;
+    }).join('');
 
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -212,7 +217,10 @@ const Index = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => copyToClipboard(`Subject: ${email.subject}\n\n${email.body}`, index + 1)}
+                      onClick={() => {
+                        const fullEmail = `Subject Options:\n${email.subjects.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nBody:\n${email.body}`;
+                        copyToClipboard(fullEmail, index + 1);
+                      }}
                       className="h-8 w-8 p-0"
                     >
                       <Copy className="h-4 w-4" />
@@ -220,10 +228,26 @@ const Index = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-1">Subject:</p>
-                      <p className="font-semibold text-primary">{email.subject}</p>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Subject Line Options:</p>
+                      <div className="space-y-2">
+                        {email.subjects.map((subject, subjectIndex) => (
+                          <div key={subjectIndex} className="flex items-center justify-between bg-muted/30 p-2 rounded-md">
+                            <span className="font-medium text-primary text-sm flex-1">
+                              {subjectIndex + 1}. {subject}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(subject, index + 1, subjectIndex)}
+                              className="h-6 w-6 p-0 ml-2"
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Body:</p>
