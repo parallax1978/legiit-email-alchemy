@@ -1,5 +1,6 @@
 
 
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -121,7 +122,7 @@ Make sure all quotes within the email content are properly escaped with backslas
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': anthropicApiKey,
-        'anthropic-version': '2024-06-01'
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
@@ -204,4 +205,5 @@ Make sure all quotes within the email content are properly escaped with backslas
     );
   }
 });
+
 
