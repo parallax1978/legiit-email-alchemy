@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,6 +40,8 @@ const Index = () => {
     setIsLoading(true);
     
     try {
+      console.log('Generating emails for niche:', niche, 'product:', product);
+      
       const response = await fetch('/api/generateEmails', {
         method: 'POST',
         headers: {
@@ -49,11 +50,21 @@ const Index = () => {
         body: JSON.stringify({ niche, product }),
       });
 
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to generate emails');
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error(`Failed to generate emails: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('Generated data:', data);
+      
+      if (!data.emails || !Array.isArray(data.emails)) {
+        throw new Error('Invalid response format: emails array not found');
+      }
+      
       setEmails(data.emails);
       
       toast({
@@ -64,7 +75,7 @@ const Index = () => {
       console.error('Error generating emails:', error);
       toast({
         title: "Generation Failed",
-        description: "Unable to generate emails. Please try again.",
+        description: error instanceof Error ? error.message : "Unable to generate emails. Please try again.",
         variant: "destructive"
       });
     } finally {
