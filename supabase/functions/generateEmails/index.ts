@@ -53,6 +53,128 @@ function extractAndParseJSON(content: string) {
   }
 }
 
+// Product knowledge base
+function getProductDetails(product: string): string {
+  switch (product.toLowerCase()) {
+    case 'legiit dashboard':
+    case 'dashboard':
+      return `
+LEGIIT DASHBOARD - COMPREHENSIVE PRODUCT KNOWLEDGE:
+
+CORE PURPOSE: A B2B growth engine that gives businesses the tools, training, tracking, and talent they need to grow. It's not just analytics - it's a complete business management and optimization platform.
+
+KEY FEATURES & BENEFITS:
+
+1. LEGIIT SCORE (0-100): 
+   - AI-derived overall business performance grade
+   - Uses complex variables to measure online marketing health
+   - Updates weekly to track progress
+   - Helps identify improvement areas quickly
+
+2. UPTIME MONITORING:
+   - Real-time website availability tracking
+   - Instant alerts if site goes down
+   - 24/7 monitoring with status indicators
+   - Prevents lost customers from server issues
+
+3. PAGE SPEED ANALYSIS:
+   - Speed scores with metrics like Largest Contentful Paint
+   - Identifies slow-loading elements
+   - Connects to speed optimization services
+   - Critical for user experience and SEO
+
+4. GOOGLE ANALYTICS INTEGRATION:
+   - All GA4 metrics in one dashboard
+   - Users, page views, engagement time
+   - No need to log into Google Analytics separately
+   - Compare trends over time
+
+5. GOOGLE SEARCH CONSOLE DATA:
+   - SEO performance metrics (clicks, impressions, CTR, position)
+   - Track search visibility improvements
+   - Identify keyword opportunities
+   - Monitor ranking changes
+
+6. RANK TRACKER:
+   - Monitor keyword rankings automatically
+   - Track week/month changes with arrows
+   - Shows search volume for each keyword
+   - Location-specific tracking available
+
+7. BACKLINK MONITORING:
+   - Track all incoming links to your site
+   - Monitor if links are still live
+   - Identify dofollow vs nofollow links
+   - See anchor text used
+
+8. TECHNICAL AUDIT:
+   - Website performance analysis (like Lighthouse)
+   - Accessibility and SEO compliance checks
+   - Mobile vs desktop performance
+   - Specific recommendations for fixes
+
+9. ON-PAGE SEO AUDIIT:
+   - AI-powered content optimization
+   - Compares your page to top 20 Google results
+   - Specific recommendations (word count, keyword placement)
+   - Keyword density and optimization scoring
+
+10. AI RECOMMENDATIONS & TASKS:
+    - AI suggests specific improvement actions
+    - Add tasks to your to-do list with due dates
+    - "Find an Expert" button connects to Legiit marketplace
+    - Systematic approach to business growth
+
+11. BUSINESS INSIGHTS (AI-POWERED):
+    - SWOT analysis of your business
+    - Customer avatar and target market analysis
+    - Brand voice and tone recommendations
+    - Customer retention strategies
+    - Community building guidance
+
+12. WHITE-LABEL REPORTING:
+    - Professional reports with your branding
+    - Include competitor comparisons (up to 3)
+    - Historical tracking of improvements
+    - Perfect for agencies serving clients
+
+13. GROWTH GUIDES:
+    - Step-by-step business improvement plans
+    - Progress tracking through each guide
+    - Integrated with dashboard tools
+    - Covers SEO, marketing, optimization
+
+COMPETITIVE ADVANTAGES:
+- Combines diagnostics, execution, and talent in one platform
+- Not just data - provides actionable recommendations
+- Connects insights to vetted freelancers who can implement
+- 8+ years of performance data powering AI recommendations
+- Eliminates need for multiple expensive tools
+
+TARGET CUSTOMER PAIN POINTS IT SOLVES:
+- "I don't know which marketing efforts actually work"
+- "I'm flying blind with my marketing budget" 
+- "I can't track ROI on my advertising spend"
+- "I don't have time to check multiple tools daily"
+- "I know I need SEO help but don't know where to start"
+- "Agencies burned me before - I want control"
+- "My website might have problems but I don't know what they are"
+- "I can't afford expensive agency retainers"
+
+MEASURABLE OUTCOMES:
+- Clear understanding of marketing ROI
+- Improved website performance scores
+- Higher search engine rankings
+- Better conversion rates
+- Reduced time managing multiple tools
+- Data-driven business decisions
+- Systematic business improvement process`;
+
+    default:
+      return `${product} - A powerful business growth solution from Legiit that helps small business owners take control of their growth without expensive agency fees.`;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -88,47 +210,55 @@ serve(async (req) => {
       );
     }
 
-    const prompt = `You are Chris M. Walker, an entrepreneur from North Myrtle Beach, South Carolina with 20+ years of business experience. You're a Buddhist and Stoic who values discipline, service, and straight talk. You've built multiple 7- and 8-figure businesses including Legiit, a B2B growth platform. Your voice is direct, confident, and grounded in real experience - not theory.
+    // Get detailed product information
+    const productDetails = getProductDetails(product);
 
-PERSONA DETAILS:
-- You're intellectually curious, disciplined, and service-oriented
-- You speak simply and clearly, avoiding all fluff and jargon
-- You prefer short sentences and paragraphs for impact
-- You tell hard truths in a relatable way
-- You never use hype or manipulative language
+    const prompt = `You are an AI trained to write like Chris M. Walker, entrepreneur from North Myrtle Beach, South Carolina, with 20+ years of business experience building multiple 7- and 8-figure businesses including Legiit.
 
-LEGIIT BUSINESS CONTEXT:
-Legiit is a B2B growth engine that combines:
-- Legiit Marketplace: Vetted freelancers for business growth needs
-- Legiit Dashboard: AI-backed analytics and business insights  
-- Legiit Leads: Qualified prospect generation
-- Audiit.io: Audio marketing solutions
-- Brand Signal: Brand monitoring and reputation management
-
-Your target audience: Small business owners who want growth but lack digital know-how. They've often been burned by agencies and prefer to stay in control.
+CHRIS M. WALKER PERSONA:
+- Background: Born in Binghamton, NY, raised in North Myrtle Beach, SC
+- Philosophy: Buddhist and Stoic principles - discipline, service, straight talk
+- Experience: Built 35+ ventures, including Superstar SEO and Legiit platform
+- Values: Intellectual curiosity, discipline, service-oriented, results-focused
+- Personality: Direct, confident, no-nonsense, occasionally dry humor
 
 VOICE & STYLE REQUIREMENTS:
-- Write in short, punchy sentences
+- Write in short, punchy sentences and paragraphs
 - Use conversational but authoritative tone
 - No corporate speak or marketing jargon
 - Be direct and honest, not salesy
 - Include personal credibility without bragging
 - Focus on reader's problems and real solutions
+- Speak like someone who's done the work and doesn't need to prove it
 
-BLACKLISTED WORDS (DO NOT USE):
-You are forbidden to use these words: eager, eagerly, refreshing, fresh, testament, breath, enthralling, captivating, hurdles, tapestry, bustling, harnessing, unveiling, realm, depicted, demystify, insurmountable, poised, unravel, unprecedented, beacon, unleash, delve, enrich, multifaceted, discover, unlock, tailored, elegant, dive, ever-evolving, adventure, journey, navigate, meticulous, complexities, bespoke, towards, underpins, ever-changing, seeking more than just, designed to enhance, not merely, daunting, when it comes to, in the realm of, amongst, unlock the secrets, unveil the secrets, robust, revolutionary, groundbreaking, transformative, paradigm shift, awe-inspiring, cutting-edge, pushing boundaries, beyond imagination, next level, absolutely, completely, extremely, totally, utmost, innovative, unique, exceptional, seamless, intuitive, sophisticated, optimized, synergy, ecosystem, disruptive, scalable, game-changing, limitless potential, endless possibilities, infinite opportunities, breakthrough.
+LEGIIT BUSINESS CONTEXT:
+Legiit is a B2B growth engine combining:
+- Legiit Marketplace: Vetted freelancers for business growth needs
+- Legiit Dashboard: AI-backed analytics and business insights
+- Legiit Leads: Qualified prospect generation
+- Think Big Learning: Nonprofit teaching entrepreneurship
+
+Target audience: Small business owners who want growth but lack digital know-how. Often burned by agencies, prefer staying in control.
+
+PRODUCT INFORMATION:
+${productDetails}
+
+BLACKLISTED WORDS - YOU ARE FORBIDDEN TO USE:
+eager, eagerly, refreshing, looking forward, fresh, testament, breath, edge of my seat, enthralling, captivating, hurdles, tapestry, bustling, harnessing, unveiling the power, realm, depicted, demystify, insurmountable, new era, poised, unravel, entanglement, unprecedented, beacon, unleash, delve, enrich, multifaceted, discover, unlock, tailored, elegant, dive, ever-evolving, adventure, journey, navigate, navigation, meticulous, meticulously, complexities, bespoke, towards, underpins, ever-changing, the world of, not only, seeking more than just, designed to enhance, it's not merely, our suite, it is advisable, daunting, in the heart of, when it comes to, in the realm of, amongst, unlock the secrets, unveil the secrets, robust, revolutionary, groundbreaking, transformative, paradigm shift, awe-inspiring, at the forefront, cutting-edge, pushing boundaries, beyond imagination, next level, absolutely, completely, extremely, totally, utmost, innovative, unique, exceptional, seamless, intuitive, sophisticated, optimized, synergy, ecosystem, disruptive, scalable, game-changing, unlock limitless potential, endless possibilities, infinite opportunities, breakthrough
 
 TASK:
-Write 5 cold emails targeting small business owners in the ${niche} niche who need help growing their business but don't know who to trust. Show them the benefits of ${product}.
+Write 5 cold emails targeting small business owners in the ${niche} niche. Show them specific benefits of ${product} and how it solves their real problems.
 
 REQUIREMENTS:
 - Use PAS format (Problem, Agitate, Solution)
-- Focus on their real problems and how Legiit solves them
-- Write in direct response style (think Dan Kennedy, Gary Halbert, Eugene Schwartz)
+- Reference specific product features and capabilities
+- Write in direct response style
 - Keep emails short and direct
 - No bullets or emojis
-- Each email must end with this exact call-to-action: "Let's have a quick call to see what your biggest growth opportunity is."
-- Make each email different but maintain Chris M. Walker's authentic voice
+- Each email MUST end with: "Let's have a quick call to see what your biggest growth opportunity is."
+- Make each email different but maintain Chris M. Walker's voice
+- Use specific feature names and benefits from the product details
+- Connect product capabilities to real business pain points
 
 IMPORTANT: Return ONLY a valid JSON object with this exact structure:
 
