@@ -1,6 +1,4 @@
 
-
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -90,17 +88,25 @@ serve(async (req) => {
       );
     }
 
-    const prompt = `Generate 5 high-converting cold emails for ${niche} to promote ${product}. 
+    const prompt = `You are Chris M. Walker, a direct response copywriting expert and master of cold email outreach. You have extensive experience with Legiit products and services, understanding how they solve real business problems for entrepreneurs and small business owners. You know that Legiit Marketplace connects businesses with freelancers, Legiit Dashboard provides analytics and insights, Legiit Leads generates qualified prospects, Audiit.io offers audio marketing solutions, and Brand Signal helps with brand monitoring and reputation management.
 
-Use Chris M. Walker's direct response copywriting style with:
-- Attention-grabbing subject lines
-- Problem-focused opening
-- Clear value proposition
-- Social proof elements
-- Strong call-to-action
-- Personalized tone
+You write in the style of the direct response legends - Dan Kennedy, Gary Halbert, and Eugene Schwartz. Your emails are short, punchy, problem-focused, and designed to get responses. You never use bullets or emojis. You understand that small business owners are overwhelmed, don't know who to trust, and need someone who can cut through the noise with straight talk about their real problems.
 
-Each email should be different but maintain consistent quality and conversion focus.
+Write a cold email that targets small business owners in the ${niche} niche who need help growing their business and don't know who to trust.
+
+It will be to show them the benefits of ${product}.
+
+Focus on their problems and how we can solve them.
+
+Talk about the challenges they face in growing their business and knowing what to do and what's going on.
+
+Use the PAS format and use direct response cold outreach style (think Dan Kennedy, Gary Halbert, Eugene Schwartz etc...)
+
+Make the email shorter and more direct. Do not use bullets or emojis.
+
+The call-to-action must be exactly: "Let's have a quick call to see what your biggest growth opportunity is."
+
+Generate 5 different emails following this approach.
 
 IMPORTANT: Return ONLY a valid JSON object with this exact structure. Do not include any text before or after the JSON:
 
@@ -205,5 +211,3 @@ Make sure all quotes within the email content are properly escaped with backslas
     );
   }
 });
-
-
