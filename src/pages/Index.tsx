@@ -48,7 +48,7 @@ const Index = () => {
         body: { niche, product }
       });
 
-      console.log('Supabase function response:', { data, error });
+      console.log('Raw Supabase function response:', { data, error });
       
       if (error) {
         console.error('Supabase function error:', error);
@@ -56,8 +56,17 @@ const Index = () => {
       }
 
       if (!data?.emails || !Array.isArray(data.emails)) {
+        console.error('Invalid response format - emails array not found:', data);
         throw new Error('Invalid response format: emails array not found');
       }
+
+      // Debug: Log each email's subjects array
+      data.emails.forEach((email, index) => {
+        console.log(`Email ${index + 1} subjects:`, email.subjects);
+        console.log(`Email ${index + 1} subjects length:`, email.subjects?.length);
+        console.log(`Email ${index + 1} subjects type:`, typeof email.subjects);
+        console.log(`Email ${index + 1} is array:`, Array.isArray(email.subjects));
+      });
       
       setEmails(data.emails);
       
@@ -209,56 +218,67 @@ const Index = () => {
               </Button>
             </div>
 
-            {emails.map((email, index) => (
-              <Card key={index} className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-lg">Email {index + 1}</CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const fullEmail = `Subject Options:\n${email.subjects.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nBody:\n${email.body}`;
-                        copyToClipboard(fullEmail, index + 1);
-                      }}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Subject Line Options:</p>
-                      <div className="space-y-2">
-                        {email.subjects.map((subject, subjectIndex) => (
-                          <div key={subjectIndex} className="flex items-center justify-between bg-muted/30 p-2 rounded-md">
-                            <span className="font-medium text-primary text-sm flex-1">
-                              {subjectIndex + 1}. {subject}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => copyToClipboard(subject, index + 1, subjectIndex)}
-                              className="h-6 w-6 p-0 ml-2"
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
+            {emails.map((email, index) => {
+              console.log(`Rendering email ${index + 1}, subjects:`, email.subjects);
+              return (
+                <Card key={index} className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-lg">Email {index + 1}</CardTitle>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const fullEmail = `Subject Options:\n${email.subjects.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nBody:\n${email.body}`;
+                          copyToClipboard(fullEmail, index + 1);
+                        }}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-2">
+                          Subject Line Options: ({email.subjects?.length || 0} found)
+                        </p>
+                        <div className="space-y-2">
+                          {email.subjects && Array.isArray(email.subjects) && email.subjects.length > 0 ? (
+                            email.subjects.map((subject, subjectIndex) => (
+                              <div key={subjectIndex} className="flex items-center justify-between bg-muted/30 p-2 rounded-md">
+                                <span className="font-medium text-primary text-sm flex-1">
+                                  {subjectIndex + 1}. {subject}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(subject, index + 1, subjectIndex)}
+                                  className="h-6 w-6 p-0 ml-2"
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-red-500 text-sm">
+                              No subject lines found. Debug info: subjects = {JSON.stringify(email.subjects)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">Body:</p>
+                        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed bg-muted/50 p-4 rounded-md">
+                          {email.body}
+                        </pre>
                       </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-1">Body:</p>
-                      <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed bg-muted/50 p-4 rounded-md">
-                        {email.body}
-                      </pre>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
