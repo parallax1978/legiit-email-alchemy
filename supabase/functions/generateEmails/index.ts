@@ -1,197 +1,147 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface GenerateEmailsRequest {
-  niche: string;
-  product: string;
-}
-
-interface GeneratedEmail {
-  subject: string;
-  body: string;
-}
-
-const PERSONA_PROMPT = `========================
-CHRIS M. WALKER AUTHOR EMULATION
-========================
-VOICE
-• Direct, confident, experienced, pragmatically helpful.  
-• Short punchy paragraphs; frequent single-sentence lines for impact.  
-• Occasional dry humor or sarcasm—never gimmicky.  
-• Speaks to the reader ("you"). Uses logic + contrast.  
-• Relatable stories, clear CTA, zero fluff.
-
-VALUES & IDENTITY
-• Discipline, ownership, freedom through entrepreneurship.  
-• Anti-hype; truth > polish.  
-• Audience: small-biz owners, freelancers, marketers craving honest guidance.
-
-BLACKLIST  (do NOT use any—replace or rephrase)  
-eager, eagerly, refreshing, looking forward, fresh, testament, breath, edge of my seat, enthralling, captivating, hurdles, tapestry, bustling, harnessing, unveiling the power, realm, depicted, demystify, insurmountable, new era, poised, unravel, entanglement, unprecedented, beacon, unleash, delve, enrich, multifaceted, discover, unlock, tailored, elegant, dive, ever-evolving, adventure, journey, navigate, navigation, meticulous, complexities, bespoke, towards, underpins, ever-changing, the world of, not only, seeking more than just, designed to enhance, it's not merely, our suite, it is advisable, daunting, in the heart of, when it comes to, amongst, unlock the secrets, unveil the secrets, robust, revolutionary, groundbreaking, transformative, paradigm shift, awe-inspiring, at the forefront, cutting-edge, pushing boundaries, beyond imagination, next level, absolutely, completely, extremely, totally, utmost, innovative, unique, exceptional, seamless, intuitive, sophisticated, optimized, synergy, ecosystem, disruptive, scalable, game-changing, unlock limitless potential, endless possibilities, infinite opportunities, breakthrough, —  (emdash character)  
-
-BUSINESS CONTEXT  (Use details naturally where useful)
-• **Company:** Legiit – a B2B growth engine combining AI insights, tracking, and a vetted freelancer marketplace.  
-• **Mission:** Give every business owner full control of growth; connect every business on Earth to Legiit.  
-• **USP:** "We combine AI, data, and elite freelancers to create the world's only B2B growth engine."  
-• **Core Products:**  
-  1) Legiit Marketplace  2) Legiit Dashboard (AI insights & tracking)  
-  3) Legiit Leads  4) Audiit.io (SEO audits)  5) Brand Signal (online brand authority).  
-• **Ideal Client:** SMB owners burned by agencies; want growth but lack in-house know-how.  
-• **Pain Points:** No clear strategy, overwhelmed, wasted spend, distrust.  
-• **Transformation:** Clarity → tracked progress → trusted execution → confident growth.
-
-MOTTO
-Clarity. Truth. Discipline. Results.
-
-========================
-END PERSONA
-========================`;
-
-const GENERATION_TEMPLATE = `Write FIVE distinct cold email drafts.
-
-Target → small business owners in [NICHE] who need help growing and don't know who to trust.
-Highlight → the benefits of [PRODUCT].
-
-Use the PAS framework (Problem ● Agitate ● Solution).  
-Adopt a direct-response style inspired by Dan Kennedy, Gary Halbert, Eugene Schwartz.
-
-Format each draft exactly:
-
-Email {n}:
-Subject: {compelling line ≤ 8 words}
-Body:
-{≤ 200 words, crisp paragraphs, logical flow, clear CTA}
-
-Separate drafts with this delimiter line:
-***`;
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { niche, product }: GenerateEmailsRequest = await req.json()
+    console.log('generateEmails function called');
+    
+    const { niche, product } = await req.json();
+    console.log('Request data:', { niche, product });
 
     if (!niche || !product) {
+      console.error('Missing required fields:', { niche, product });
       return new Response(
-        JSON.stringify({ error: 'Missing niche or product parameter' }),
+        JSON.stringify({ error: 'Missing required fields: niche and product' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
-      )
+      );
     }
 
-    // Get Anthropic API key from environment
-    const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY')
+    const anthropicApiKey = Deno.env.get('ANTHROPIC_API_KEY');
     if (!anthropicApiKey) {
-      console.error('ANTHROPIC_API_KEY not found in environment variables')
+      console.error('ANTHROPIC_API_KEY not found');
       return new Response(
-        JSON.stringify({ error: 'API configuration error' }),
+        JSON.stringify({ error: 'API key not configured' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
-      )
+      );
     }
 
-    // Create the full prompt
-    const generationPrompt = GENERATION_TEMPLATE
-      .replace('[NICHE]', niche)
-      .replace('[PRODUCT]', product)
+    const prompt = `Generate 5 high-converting cold emails for ${niche} to promote ${product}. 
 
-    const fullPrompt = PERSONA_PROMPT + '\n\n' + generationPrompt
+Use Chris M. Walker's direct response copywriting style with:
+- Attention-grabbing subject lines
+- Problem-focused opening
+- Clear value proposition
+- Social proof elements
+- Strong call-to-action
+- Personalized tone
 
-    console.log('Calling Anthropic API with prompt for niche:', niche, 'product:', product)
+Each email should be different but maintain consistent quality and conversion focus.
 
-    // Call Anthropic API
+Return ONLY a JSON object with this exact structure:
+{
+  "emails": [
+    {
+      "subject": "Subject line here",
+      "body": "Email body here"
+    }
+  ]
+}`;
+
+    console.log('Making request to Anthropic API...');
+    
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${anthropicApiKey}`,
         'Content-Type': 'application/json',
+        'x-api-key': anthropicApiKey,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
         model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 1500,
-        temperature: 0.7,
+        max_tokens: 4000,
         messages: [
           {
             role: 'user',
-            content: fullPrompt
+            content: prompt
           }
         ]
       })
-    })
+    });
+
+    console.log('Anthropic API response status:', response.status);
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Anthropic API error:', response.status, errorText)
+      const errorText = await response.text();
+      console.error('Anthropic API error:', errorText);
       return new Response(
-        JSON.stringify({ error: 'Failed to generate emails' }),
+        JSON.stringify({ error: `API request failed: ${response.status}` }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
-      )
+      );
     }
 
-    const anthropicData = await response.json()
-    const generatedText = anthropicData.content[0].text
+    const data = await response.json();
+    console.log('Anthropic API response received');
+    
+    const content = data.content[0].text;
+    console.log('Generated content:', content);
 
-    console.log('Generated text:', generatedText)
-
-    // Parse the generated emails
-    const emailSections = generatedText.split('***').filter(section => section.trim())
-    const emails: GeneratedEmail[] = []
-
-    for (const section of emailSections) {
-      const lines = section.trim().split('\n').filter(line => line.trim())
-      
-      let subject = ''
-      let body = ''
-      let isBody = false
-
-      for (const line of lines) {
-        if (line.startsWith('Subject:')) {
-          subject = line.replace('Subject:', '').trim()
-        } else if (line.startsWith('Body:')) {
-          isBody = true
-        } else if (isBody && line.trim()) {
-          body += (body ? '\n' : '') + line.trim()
+    // Parse the JSON response from Claude
+    let emails;
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        emails = JSON.parse(jsonMatch[0]);
+      } else {
+        throw new Error('No valid JSON found in response');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to parse AI response' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
-      }
-
-      if (subject && body) {
-        emails.push({ subject, body })
-      }
+      );
     }
 
-    console.log('Parsed emails:', emails.length)
+    console.log('Successfully generated emails:', emails);
 
     return new Response(
-      JSON.stringify({ emails }),
+      JSON.stringify(emails),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
-    )
+    );
 
   } catch (error) {
-    console.error('Error in generateEmails function:', error)
+    console.error('Error in generateEmails function:', error);
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
-    )
+    );
   }
-})
+});

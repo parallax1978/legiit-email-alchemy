@@ -1,1 +1,5 @@
+
 project_id = "ynuanajnqokshnkijast"
+
+[functions.generateEmails]
+verify_jwt = false
