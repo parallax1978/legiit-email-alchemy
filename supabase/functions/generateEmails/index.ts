@@ -230,6 +230,7 @@ VOICE & STYLE REQUIREMENTS:
 - Focus on reader's problems and real solutions
 - Speak with authority but NEVER use first-person experience claims like "I've built" or "I spent years"
 - NO PERSONAL EXPERIENCE REFERENCES - do not mention personal business history or achievements
+- Use proper grammar: write "the Legiit Dashboard" when grammatically appropriate (not just "Legiit Dashboard")
 
 LEGIIT BUSINESS CONTEXT:
 Legiit is a B2B growth engine combining:
