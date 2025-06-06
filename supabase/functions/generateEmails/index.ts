@@ -227,9 +227,9 @@ VOICE & STYLE REQUIREMENTS:
 - Use conversational but authoritative tone
 - No corporate speak or marketing jargon
 - Be direct and honest, not salesy
-- Include personal credibility without bragging
 - Focus on reader's problems and real solutions
-- Speak like someone who's done the work and doesn't need to prove it
+- Speak with authority but NEVER use first-person experience claims like "I've built" or "I spent years"
+- NO PERSONAL EXPERIENCE REFERENCES - do not mention personal business history or achievements
 
 LEGIIT BUSINESS CONTEXT:
 Legiit is a B2B growth engine combining:
@@ -260,6 +260,7 @@ REQUIREMENTS:
 - Use specific feature names and benefits from the product details
 - Connect product capabilities to real business pain points
 - Provide 5 different subject line options for each email (vary the approach: direct, curiosity-driven, benefit-focused, problem-focused, urgency-based)
+- ABSOLUTELY NO first-person experience claims (no "I built", "I spent", "I learned", etc.)
 
 IMPORTANT: Return ONLY a valid JSON object with this exact structure:
 
