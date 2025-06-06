@@ -48,7 +48,7 @@ const Index = () => {
         body: { niche, product }
       });
 
-      console.log('Raw Supabase function response:', { data, error });
+      console.log('Supabase function response:', { data, error });
       
       if (error) {
         console.error('Supabase function error:', error);
@@ -60,13 +60,7 @@ const Index = () => {
         throw new Error('Invalid response format: emails array not found');
       }
 
-      // Debug: Log each email's subjects array
-      data.emails.forEach((email, index) => {
-        console.log(`Email ${index + 1} subjects:`, email.subjects);
-        console.log(`Email ${index + 1} subjects length:`, email.subjects?.length);
-        console.log(`Email ${index + 1} subjects type:`, typeof email.subjects);
-        console.log(`Email ${index + 1} is array:`, Array.isArray(email.subjects));
-      });
+      console.log('Raw emails data:', data.emails);
       
       setEmails(data.emails);
       
@@ -116,7 +110,8 @@ const Index = () => {
     }
 
     const content = emails.map((email, index) => {
-      const subjectLines = email.subjects.map((subject, idx) => `Subject Option ${idx + 1}: ${subject}`).join('\n');
+      const subjects = email.subjects || [];
+      const subjectLines = subjects.map((subject, idx) => `Subject Option ${idx + 1}: ${subject}`).join('\n');
       return `Email ${index + 1}:\n${subjectLines}\nBody:\n${email.body}\n\n***\n\n`;
     }).join('');
 
@@ -219,7 +214,9 @@ const Index = () => {
             </div>
 
             {emails.map((email, index) => {
-              console.log(`Rendering email ${index + 1}, subjects:`, email.subjects);
+              const subjects = email.subjects || [];
+              console.log(`Email ${index + 1} subjects:`, subjects);
+              
               return (
                 <Card key={index} className="shadow-lg border-0 bg-white/70 backdrop-blur-sm">
                   <CardHeader className="pb-3">
@@ -229,7 +226,10 @@ const Index = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          const fullEmail = `Subject Options:\n${email.subjects.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\nBody:\n${email.body}`;
+                          const subjectText = subjects.length > 0 
+                            ? subjects.map((s, i) => `${i + 1}. ${s}`).join('\n') 
+                            : 'No subjects available';
+                          const fullEmail = `Subject Options:\n${subjectText}\n\nBody:\n${email.body}`;
                           copyToClipboard(fullEmail, index + 1);
                         }}
                         className="h-8 w-8 p-0"
@@ -242,11 +242,11 @@ const Index = () => {
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground mb-2">
-                          Subject Line Options: ({email.subjects?.length || 0} found)
+                          Subject Line Options: ({subjects.length} found)
                         </p>
                         <div className="space-y-2">
-                          {email.subjects && Array.isArray(email.subjects) && email.subjects.length > 0 ? (
-                            email.subjects.map((subject, subjectIndex) => (
+                          {subjects.length > 0 ? (
+                            subjects.map((subject, subjectIndex) => (
                               <div key={subjectIndex} className="flex items-center justify-between bg-muted/30 p-2 rounded-md">
                                 <span className="font-medium text-primary text-sm flex-1">
                                   {subjectIndex + 1}. {subject}
@@ -262,8 +262,8 @@ const Index = () => {
                               </div>
                             ))
                           ) : (
-                            <div className="text-red-500 text-sm">
-                              No subject lines found. Debug info: subjects = {JSON.stringify(email.subjects)}
+                            <div className="text-orange-600 text-sm bg-orange-50 p-2 rounded-md">
+                              No subject lines found for this email. Raw data: {JSON.stringify(email, null, 2)}
                             </div>
                           )}
                         </div>
