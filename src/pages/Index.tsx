@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Copy, Download, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface GeneratedEmail {
   subject: string;
@@ -42,28 +43,18 @@ const Index = () => {
     try {
       console.log('Generating emails for niche:', niche, 'product:', product);
       
-      const response = await fetch('https://ynuanajnqokshnkijast.supabase.co/functions/v1/generateEmails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InludWFuYWpucW9rc2hua2lqYXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMjc0OTAsImV4cCI6MjA2NDgwMzQ5MH0.71oYNVk2PSQvIvqJzECaYWFi4-R1I6DoFAktd1w9sho',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InludWFuYWpucW9rc2hua2lqYXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMjc0OTAsImV4cCI6MjA2NDgwMzQ5MH0.71oYNVk2PSQvIvqJzECaYWFi4-R1I6DoFAktd1w9sho'
-        },
-        body: JSON.stringify({ niche, product }),
+      const { data, error } = await supabase.functions.invoke('generateEmails', {
+        body: { niche, product }
       });
 
-      console.log('Response status:', response.status);
+      console.log('Supabase function response:', { data, error });
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('API error response:', errorText);
-        throw new Error(`Failed to generate emails: ${response.status} ${response.statusText}`);
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(`Failed to generate emails: ${error.message}`);
       }
 
-      const data = await response.json();
-      console.log('Generated data:', data);
-      
-      if (!data.emails || !Array.isArray(data.emails)) {
+      if (!data?.emails || !Array.isArray(data.emails)) {
         throw new Error('Invalid response format: emails array not found');
       }
       
