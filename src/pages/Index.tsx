@@ -42,10 +42,12 @@ const Index = () => {
     try {
       console.log('Generating emails for niche:', niche, 'product:', product);
       
-      const response = await fetch('/api/generateEmails', {
+      const response = await fetch('https://ynuanajnqokshnkijast.supabase.co/functions/v1/generateEmails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InludWFuYWpucW9rc2hua2lqYXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMjc0OTAsImV4cCI6MjA2NDgwMzQ5MH0.71oYNVk2PSQvIvqJzECaYWFi4-R1I6DoFAktd1w9sho',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InludWFuYWpucW9rc2hua2lqYXN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyMjc0OTAsImV4cCI6MjA2NDgwMzQ5MH0.71oYNVk2PSQvIvqJzECaYWFi4-R1I6DoFAktd1w9sho'
         },
         body: JSON.stringify({ niche, product }),
       });
