@@ -7,6 +7,52 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to safely extract and parse JSON from Claude's response
+function extractAndParseJSON(content: string) {
+  console.log('Raw content from Claude:', content);
+  
+  // Try to find JSON block markers first
+  let jsonStart = content.indexOf('{');
+  let jsonEnd = content.lastIndexOf('}') + 1;
+  
+  if (jsonStart === -1 || jsonEnd === 0) {
+    throw new Error('No JSON object found in response');
+  }
+  
+  let jsonString = content.slice(jsonStart, jsonEnd);
+  console.log('Extracted JSON string:', jsonString);
+  
+  // Try parsing directly first
+  try {
+    return JSON.parse(jsonString);
+  } catch (firstError) {
+    console.log('Direct parsing failed, attempting cleanup:', firstError.message);
+    
+    // If direct parsing fails, try to clean up common issues
+    try {
+      // Remove any trailing text after the last }
+      const lastBrace = jsonString.lastIndexOf('}');
+      if (lastBrace !== -1) {
+        jsonString = jsonString.substring(0, lastBrace + 1);
+      }
+      
+      // Try parsing the cleaned string
+      return JSON.parse(jsonString);
+    } catch (secondError) {
+      console.log('Cleanup parsing also failed:', secondError.message);
+      
+      // Last resort: try to extract a more conservative JSON block
+      const conservativeMatch = content.match(/\{[\s\S]*?"emails"[\s\S]*?\}\s*$/);
+      if (conservativeMatch) {
+        console.log('Trying conservative extraction');
+        return JSON.parse(conservativeMatch[0]);
+      }
+      
+      throw new Error(`Failed to parse JSON after multiple attempts. Original error: ${firstError.message}`);
+    }
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -54,15 +100,18 @@ Use Chris M. Walker's direct response copywriting style with:
 
 Each email should be different but maintain consistent quality and conversion focus.
 
-Return ONLY a JSON object with this exact structure:
+IMPORTANT: Return ONLY a valid JSON object with this exact structure. Do not include any text before or after the JSON:
+
 {
   "emails": [
     {
       "subject": "Subject line here",
-      "body": "Email body here"
+      "body": "Email body here with proper line breaks as \\n"
     }
   ]
-}`;
+}
+
+Make sure all quotes within the email content are properly escaped with backslashes.`;
 
     console.log('Making request to Anthropic API...');
     
@@ -105,19 +154,28 @@ Return ONLY a JSON object with this exact structure:
     const content = data.content[0].text;
     console.log('Generated content:', content);
 
-    // Parse the JSON response from Claude
+    // Use improved JSON extraction and parsing
     let emails;
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        emails = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error('No valid JSON found in response');
+      emails = extractAndParseJSON(content);
+      
+      // Validate the structure
+      if (!emails || !emails.emails || !Array.isArray(emails.emails)) {
+        throw new Error('Invalid response structure: missing emails array');
       }
+      
+      // Validate each email has required fields
+      for (let i = 0; i < emails.emails.length; i++) {
+        const email = emails.emails[i];
+        if (!email.subject || !email.body) {
+          throw new Error(`Email ${i + 1} missing required fields (subject or body)`);
+        }
+      }
+      
     } catch (parseError) {
-      console.error('Failed to parse JSON:', parseError);
+      console.error('Failed to parse or validate JSON:', parseError);
       return new Response(
-        JSON.stringify({ error: 'Failed to parse AI response' }),
+        JSON.stringify({ error: `Failed to parse AI response: ${parseError.message}` }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -125,7 +183,7 @@ Return ONLY a JSON object with this exact structure:
       );
     }
 
-    console.log('Successfully generated emails:', emails);
+    console.log('Successfully generated and validated emails:', emails);
 
     return new Response(
       JSON.stringify(emails),
