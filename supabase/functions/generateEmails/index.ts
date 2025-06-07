@@ -56,6 +56,104 @@ function extractAndParseJSON(content: string) {
 // Product knowledge base
 function getProductDetails(product: string): string {
   switch (product.toLowerCase()) {
+    case 'legiit marketplace':
+    case 'marketplace':
+      return `
+LEGIIT MARKETPLACE - COMPREHENSIVE PRODUCT KNOWLEDGE:
+
+CORE PURPOSE: The world's premier freelance marketplace connecting businesses with 10,000+ vetted professionals across 12+ service categories. Unlike other platforms, Legiit focuses on quality over quantity with rigorous vetting and guarantees.
+
+KEY FEATURES & BENEFITS:
+
+1. VETTED TALENT POOL:
+   - 10,000+ freelancers across 12+ fields (SEO, content, design, development, etc.)
+   - 55-point inspection process before freelancers are listed
+   - Only the most skilled professionals make it onto the platform
+   - Identity verification for added security and trust
+
+2. LEGIIT CHECKED VERIFICATION:
+   - Elite services personally tested by Legiit's expert team
+   - "Mystery shopper" testing for real-world performance
+   - Expert evaluation of deliverables and communication
+   - Proven track record of consistent excellence
+   - Easy filtering to find only verified top-tier services
+
+3. COMPREHENSIVE SERVICE CATEGORIES:
+   - SEO & Digital Marketing (Legiit's specialty - originated as leading SEO marketplace)
+   - Content Writing & Copywriting (blogs, sales copy, press releases)
+   - Graphics & Design (logos, branding, infographics)
+   - Programming & Tech Development (websites, WordPress, software)
+   - Video & Multimedia (creation, editing, YouTube optimization)
+   - eCommerce Support (Shopify, Amazon, product listings)
+   - Virtual Assistance & Admin tasks
+   - Audio Services (voice-overs, podcast editing)
+
+4. QUALITY ASSURANCE SYSTEM:
+   - Detailed freelancer profiles with portfolios
+   - Transparent 5-star review system
+   - Internal messaging for pre-sale questions
+   - Community forums and Facebook group support
+   - Ongoing monitoring of freelancer performance
+
+5. THE LEGIIT GUARANTEE:
+   - "Get what you paid for or get your money back"
+   - Fast dispute resolution (no bureaucratic hassles)
+   - Auto-refunds for late deliveries
+   - 48-hour response requirement for sellers
+   - Escrow payment protection until work is delivered
+
+6. TRANSPARENT PRICING & PAYMENTS:
+   - No hidden fees for buyers ("pay the sticker price")
+   - All costs shown upfront
+   - Multiple payment options (credit cards, PayPal, Skrill, Payoneer)
+   - Secure escrow system protects buyers
+   - Lower 10% commission attracts top talent
+
+7. 24/7 WORLD-CLASS SUPPORT:
+   - Round-the-clock customer service
+   - Multiple contact channels (tickets, email, forums)
+   - Knowledgeable support staff
+   - Quick response times regardless of time zone
+   - Human touch in dispute resolution
+
+8. USER-FRIENDLY PLATFORM:
+   - Intuitive interface for easy navigation
+   - Smart categorization and filtering
+   - Direct communication with freelancers
+   - Portfolio and review browsing
+   - Mobile-friendly experience
+
+COMPETITIVE ADVANTAGES:
+- Higher quality standards than other marketplaces
+- Seller-friendly policies attract top professionals
+- Comprehensive vetting eliminates unreliable freelancers
+- Strong guarantee and dispute resolution
+- No hidden fees or surprise charges
+- 24/7 support availability
+- Community-oriented approach with forums and groups
+
+TARGET CUSTOMER PAIN POINTS IT SOLVES:
+- "I've been burned by unreliable freelancers before"
+- "Other platforms are full of low-quality providers"
+- "I don't have time to vet dozens of freelancers"
+- "Agencies are too expensive for my budget"
+- "I need multiple specialists but hate using different platforms"
+- "I'm tired of hidden fees and surprise charges"
+- "When something goes wrong, support is nowhere to be found"
+- "I can't tell which freelancers are actually good"
+- "Communication with freelancers is always a nightmare"
+- "I need quality work but don't want to pay agency prices"
+
+MEASURABLE OUTCOMES:
+- Access to pre-vetted talent pool (saves 10-20 hours of screening)
+- Higher project success rate due to quality vetting
+- Cost savings compared to agencies (often 50-70% less)
+- Faster project completion with skilled professionals
+- Reduced risk of project failure or poor quality
+- One-stop solution for multiple business needs
+- Peace of mind with guarantee and support
+- Transparent budgeting with no hidden fees`;
+
     case 'legiit dashboard':
     case 'dashboard':
       return `
@@ -113,7 +211,7 @@ KEY FEATURES & BENEFITS:
    - Mobile vs desktop performance
    - Specific recommendations for fixes
 
-9. ON-PAGE SEO AUDIIT:
+9. ON-PAGE SEO AUDIT:
    - AI-powered content optimization
    - Compares your page to top 20 Google results
    - Specific recommendations (word count, keyword placement)
